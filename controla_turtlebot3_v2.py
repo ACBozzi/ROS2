@@ -21,7 +21,7 @@ def laser_callback(data):
     global laser
     laser = data  
 
-def move_turtlebot3():
+def move_turtlebot3(node):
     #rclpy.init()  # Inicializa o sistema ROS2
     node = rclpy.create_node('controlador_turtlebot3')  # Cria um nó ROS2 com o nome 'controlador_turtlebot3'
 
@@ -41,18 +41,18 @@ def move_turtlebot3():
             if (min(laser.ranges[90:270]) > 0.35):
                 # Lógica para evitar obstáculos
                 twist.angular.z = 0.0
-                twist.linear.x = -0.3 # ajusta a velocidade linear negativa de forma aleatória
+                twist.linear.x = random.uniform(-0.25, -0.35) # ajusta a velocidade linear negativa de forma aleatória
             else:
                 # Se não houver obstáculos significativos à frente, use as velocidades definidas originalmente
                 twist.linear.x = 0.2
-                twist.angular.z = 0.0
+                twist.angular.z = 0.5
                 
         cmd_vel_publisher.publish(twist)  # Publica a mensagem Twist no tópico /cmd_vel
         node.get_logger().info('Movendo Turtlebot3')  # Mensagem de log indicando que o Turtlebot3 está em movimento
         node.get_logger().info('Velocidade Linear: {}, Velocidade Angular: {}'.format(
             twist.linear.x, twist.angular.z))  # Imprime as velocidades linear e angular
 
-        rclpy.spin_once(node, timeout_sec=0.1)  # Realiza um ciclo do sistema ROS2
+        rclpy.spin_once(node, timeout_sec=0.01)  # Realiza um ciclo do sistema ROS2
 
     node.destroy_node()  # Finaliza o nó ROS2
     rclpy.shutdown()  # Encerra o sistema ROS2
